@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>案例 · 海报中心</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --porcelain:#F8F5EF;   /* 品牌背景 · 奶油白 */
+  --ink:#444444;         /* 品牌正文 · 深灰 */
+  --muted:#8A867C;
+  --sage:#4E5B4F;        /* 品牌主色 · 深鼠尾草绿 */
+  --sage-deep:#3E4940;   /* 主色加深(顶栏) */
+  --bronze:#C9A66B;      /* 品牌辅助色 · 香槟金 */
+  --card:#FFFFFF;
+  --line:#E7E1D4;
+  --stop:#9C4A3C;
+  --serif:"Noto Serif SC",serif;
+  --sans:"Noto Sans SC",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--porcelain);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;padding-bottom:96px}
+button{font-family:var(--sans);cursor:pointer}
+img{display:block}
+
+/* ---------- 顶栏 ---------- */
+header{background:var(--sage-deep);color:#F3F1E8;padding:calc(env(safe-area-inset-top) + 14px) 18px 0}
+.brand{font-family:var(--serif);font-weight:600;font-size:19px;letter-spacing:.14em}
+.brand small{font-family:var(--sans);font-weight:400;font-size:11px;letter-spacing:.3em;opacity:.65;margin-left:10px}
+.tabs{display:flex;gap:4px;margin-top:12px}
+.tab{flex:1;background:none;border:none;color:#D8D5C6;font-size:15px;padding:10px 0 12px;position:relative;letter-spacing:.08em}
+.tab.active{color:#fff;font-weight:700}
+.tab.active::after{content:"";position:absolute;left:25%;right:25%;bottom:0;height:3px;background:var(--bronze);border-radius:3px 3px 0 0}
+
+/* ---------- 筛选栏 ---------- */
+.filters{position:sticky;top:0;z-index:20;background:var(--porcelain);border-bottom:1px solid var(--line);padding:10px 14px;display:flex;gap:8px;overflow-x:auto}
+.filters select{flex:1;min-width:96px;appearance:none;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-family:var(--sans);font-size:13px;color:var(--ink)}
+.filters select.on{border-color:var(--sage);color:var(--sage-deep);font-weight:700;background:#EAEEE9}
+
+/* ---------- 案例网格 ---------- */
+main{padding:14px}
+.count{font-size:12px;color:var(--muted);margin:2px 2px 10px;letter-spacing:.05em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.thumb{position:relative;aspect-ratio:4/5;background:#ECE8DE;cursor:pointer}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.pairbox{display:flex;height:100%}
+.pairbox .half{position:relative;width:50%;height:100%;overflow:hidden}
+.pairbox .half+.half{border-left:1.5px solid #fff}
+.pairbox .half img{width:100%;height:100%;object-fit:cover}
+.pairbox .tag{position:absolute;left:0;bottom:0;font-family:var(--serif);font-size:11px;letter-spacing:.15em;color:#fff;background:rgba(38,41,31,.62);padding:2px 8px;border-radius:0 8px 0 0}
+.meta{padding:9px 11px 11px}
+.meta .l1{font-weight:700;font-size:13.5px;display:flex;justify-content:space-between;gap:6px}
+.meta .l1 span:last-child{font-weight:400;color:var(--muted);font-size:12px;white-space:nowrap}
+.meta .l2{margin-top:3px;display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:11px;color:var(--sage-deep);background:#EEF0E9;border-radius:6px;padding:1px 7px}
+.chip.gold{color:#8A6C3C;background:#F5ECDB}
+
+/* ---------- 海报 ---------- */
+.sect{font-family:var(--serif);font-weight:600;font-size:16px;letter-spacing:.1em;margin:6px 2px 12px;display:flex;align-items:center;gap:8px}
+.sect::after{content:"";flex:1;height:1px;background:var(--line)}
+.sect.stopped{color:var(--stop)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:26px}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;position:relative}
+.pcard .thumb{aspect-ratio:3/4}
+.pcard.off .thumb img{filter:grayscale(1);opacity:.55}
+.ribbon{position:absolute;top:12px;left:-34px;transform:rotate(-38deg);background:var(--stop);color:#fff;font-size:11px;font-weight:700;letter-spacing:.2em;padding:3px 38px;z-index:2}
+.pmeta{padding:10px 11px}
+.pmeta .t{font-weight:700;font-size:14px}
+.pmeta .v{font-size:12px;color:var(--muted);margin-top:2px}
+.pacts{display:flex;border-top:1px solid var(--line)}
+.pacts button{flex:1;background:none;border:none;padding:9px 0;font-size:12.5px;color:var(--sage-deep)}
+.pacts button+button{border-left:1px solid var(--line);color:var(--stop)}
+
+/* ---------- 空状态 ---------- */
+.empty{text-align:center;color:var(--muted);padding:70px 20px;font-size:14px}
+.empty b{display:block;font-family:var(--serif);font-size:17px;color:var(--ink);margin-bottom:6px;font-weight:600}
+
+/* ---------- 上传按钮 ---------- */
+.fab{position:fixed;right:18px;bottom:calc(env(safe-area-inset-bottom) + 20px);z-index:30;background:var(--bronze);color:#3B3222;border:none;border-radius:30px;padding:14px 22px;font-size:15px;font-weight:700;letter-spacing:.1em;box-shadow:0 6px 18px rgba(160,128,74,.4)}
+
+/* ---------- 弹层通用 ---------- */
+.overlay{position:fixed;inset:0;background:rgba(30,32,24,.55);z-index:40;display:none;align-items:flex-end;justify-content:center}
+.overlay.show{display:flex}
+.sheet{background:var(--porcelain);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:20px 18px calc(env(safe-area-inset-bottom) + 24px)}
+.sheet h2{font-family:var(--serif);font-weight:600;font-size:17px;letter-spacing:.12em;margin-bottom:16px}
+.f{margin-bottom:13px}
+.f label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px;letter-spacing:.05em}
+.f input,.f select,.f textarea{width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-family:var(--sans);font-size:15px;color:var(--ink)}
+.f textarea{resize:none;height:64px}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{flex:1;border:none;background:none;padding:10px 0;font-size:14px;color:var(--muted)}
+.seg button.on{background:var(--sage);color:#fff;font-weight:700}
+.pick{display:flex;gap:10px}
+.pick .slot{flex:1;aspect-ratio:4/5;border:1.5px dashed #C9C3B2;border-radius:12px;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);font-size:13px;overflow:hidden;position:relative;cursor:pointer}
+.pick .slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pick .slot .lb{font-family:var(--serif);letter-spacing:.2em;font-size:14px;color:var(--sage-deep);margin-bottom:4px}
+.btnrow{display:flex;gap:10px;margin-top:18px}
+.btnrow button{flex:1;border-radius:12px;padding:13px 0;font-size:15px;border:1px solid var(--line);background:var(--card);color:var(--muted)}
+.btnrow .go{background:var(--sage);border-color:var(--sage);color:#fff;font-weight:700;letter-spacing:.15em;flex:2}
+.btnrow .go:disabled{opacity:.55}
+
+/* ---------- 大图查看 ---------- */
+.viewer{position:fixed;inset:0;background:rgba(20,21,16,.94);z-index:50;display:none;flex-direction:column;color:#EDEBE0}
+.viewer.show{display:flex}
+.viewer .vhead{display:flex;justify-content:space-between;align-items:center;padding:calc(env(safe-area-inset-top) + 12px) 16px 10px}
+.viewer .vhead .x{background:none;border:none;color:#EDEBE0;font-size:26px;line-height:1}
+.viewer .vbody{flex:1;overflow:auto;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:8px;padding:8px}
+.viewer .vimg{position:relative;flex:1 1 300px;max-width:560px}
+.viewer .vimg img{width:100%;height:auto;border-radius:8px}
+.viewer .vimg .tag{position:absolute;top:8px;left:8px;font-family:var(--serif);letter-spacing:.2em;font-size:12px;background:rgba(38,41,31,.72);padding:3px 10px;border-radius:6px}
+.viewer .vfoot{padding:12px 18px calc(env(safe-area-inset-bottom) + 16px);font-size:13px}
+.viewer .vfoot .del{margin-top:10px;background:none;border:1px solid rgba(255,255,255,.28);color:#E6B9AE;border-radius:10px;padding:8px 18px;font-size:13px}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:13.5px;padding:10px 20px;border-radius:24px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;max-width:86vw;text-align:center}
+.toast.show{opacity:.95}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">案例 · 海报中心<small>CASE LIBRARY</small></div>
+  <div class="tabs">
+    <button class="tab active" id="tabCases" onclick="switchTab('cases')">案例库</button>
+    <button class="tab" id="tabPosters" onclick="switchTab('posters')">海报管理</button>
+  </div>
+</header>
+
+<!-- 案例筛选 -->
+<div class="filters" id="caseFilters">
+  <select id="fOperator" onchange="renderCases()"><option value="">操作师 · 全部</option></select>
+  <select id="fPart" onchange="renderCases()"><option value="">部位 · 全部</option></select>
+  <select id="fProject" onchange="renderCases()"><option value="">项目 · 全部</option></select>
+</div>
+
+<main>
+  <div id="pageCases">
+    <div class="count" id="caseCount"></div>
+    <div class="grid" id="caseGrid"></div>
+    <div class="empty" id="caseEmpty" style="display:none"><b>还没有案例</b>点右下角「上传」,拍照即可归档第一条案例</div>
+  </div>
+
+  <div id="pagePosters" style="display:none">
+    <div class="sect">🟢 在售主推</div>
+    <div class="pgrid" id="activeGrid"></div>
+    <div class="empty" id="activeEmpty" style="display:none">暂无在售活动海报</div>
+    <div class="sect stopped">⛔ 停售勿推</div>
+    <div class="pgrid" id="stoppedGrid"></div>
+    <div class="empty" id="stoppedEmpty" style="display:none">暂无停售海报</div>
+  </div>
+</main>
+
+<button class="fab" id="fabBtn" onclick="openUpload()">＋ 上传</button>
+
+<!-- 案例上传 -->
+<div class="overlay" id="caseSheet" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="sheet">
+    <h2>上传案例</h2>
+    <div class="f">
+      <div class="seg">
+        <button type="button" id="mSingle" class="on" onclick="setMode('single')">单张</button>
+        <button type="button" id="mPair" onclick="setMode('pair')">术前 / 术后对比</button>
+      </div>
+    </div>
+    <div class="f">
+      <div class="pick" id="pickRow">
+        <div class="slot" onclick="fileA.click()"><span class="lb" id="lbA">照 片</span><span id="hintA">点击拍照或选图</span><img id="prevA" style="display:none"></div>
+        <div class="slot" id="slotB" style="display:none" onclick="fileB.click()"><span class="lb">术 后</span><span id="hintB">点击拍照或选图</span><img id="prevB" style="display:none"></div>
+      </div>
+      <input type="file" id="fileA" accept="image/*" hidden onchange="preview(this,'prevA','hintA')">
+      <input type="file" id="fileB" accept="image/*" hidden onchange="preview(this,'prevB','hintB')">
+    </div>
+    <div class="f"><label>操作师</label><input id="inOperator" list="dlOperator" placeholder="选择或输入新名字"><datalist id="dlOperator"></datalist></div>
+    <div class="f"><label>操作部位</label><input id="inPart" list="dlPart" placeholder="如:面部 / 腹部 / 大腿"><datalist id="dlPart"></datalist></div>
+    <div class="f"><label>项目 / 仪器</label><input id="inProject" list="dlProject" placeholder="如:Onda Pro / 注射类"><datalist id="dlProject"></datalist></div>
+    <div class="f"><label>操作日期</label><input id="inDate" type="date"></div>
+    <div class="f"><label>备注(选填)</label><textarea id="inNote" placeholder="如:第 3 次疗程,搭配套餐"></textarea></div>
+    <div class="btnrow">
+      <button type="button" onclick="caseSheet.classList.remove('show')">取消</button>
+      <button type="button" class="go" id="caseGo" onclick="submitCase()">保 存 案 例</button>
+    </div>
+  </div>
+</div>
+
+<!-- 海报上传 -->
+<div class="overlay" id="posterSheet" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="sheet">
+    <h2>上传海报</h2>
+    <div class="f">
+      <div class="pick">
+        <div class="slot" style="aspect-ratio:3/4" onclick="fileP.click()"><span class="lb">海 报</span><span id="hintP">点击拍照或选图</span><img id="prevP" style="display:none"></div>
+      </div>
+      <input type="file" id="fileP" accept="image/*" hidden onchange="preview(this,'prevP','hintP')">
+    </div>
+    <div class="f"><label>活动名称</label><input id="inTitle" placeholder="如:双十一储值礼遇"></div>
+    <div class="f"><label>状态</label>
+      <div class="seg">
+        <button type="button" id="stActive" class="on" onclick="setStatus('active')">🟢 在售主推</button>
+        <button type="button" id="stStopped" onclick="setStatus('stopped')">⛔ 停售勿推</button>
+      </div>
+    </div>
+    <div class="f"><label>有效期(选填)</label><input id="inValid" placeholder="如:至 7 月 31 日"></div>
+    <div class="f"><label>备注(选填)</label><textarea id="inPNote" placeholder="如:仅限老客 / 不可与储值同享"></textarea></div>
+    <div class="btnrow">
+      <button type="button" onclick="posterSheet.classList.remove('show')">取消</button>
+      <button type="button" class="go" id="posterGo" onclick="submitPoster()">保 存 海 报</button>
+    </div>
+  </div>
+</div>
+
+<!-- 大图查看 -->
+<div class="viewer" id="viewer">
+  <div class="vhead"><span id="vTitle" style="font-family:var(--serif);letter-spacing:.1em"></span><button class="x" onclick="viewer.classList.remove('show')">×</button></div>
+  <div class="vbody" id="vBody"></div>
+  <div class="vfoot"><div id="vMeta"></div><button class="del" id="vDel">删除该记录(需管理密码)</button></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let cases = [], posters = [], curTab = "cases", curMode = "single", curStatus = "active";
+const $ = id => document.getElementById(id);
+
+// ---------- 初始化 ----------
+window.addEventListener("load", () => {
+  $("inDate").value = new Date().toISOString().slice(0, 10);
+  loadAll();
+});
+
+async function loadAll() {
+  try {
+    const [c, p] = await Promise.all([
+      fetch("/api/list?type=cases").then(r => r.json()),
+      fetch("/api/list?type=posters").then(r => r.json()),
+    ]);
+    cases = Array.isArray(c) ? c : [];
+    posters = Array.isArray(p) ? p : [];
+    buildFilters(); renderCases(); renderPosters();
+  } catch (e) { toast("加载失败,请检查网络后刷新"); }
+}
+
+// ---------- 页签 ----------
+function switchTab(t) {
+  curTab = t;
+  $("tabCases").classList.toggle("active", t === "cases");
+  $("tabPosters").classList.toggle("active", t === "posters");
+  $("pageCases").style.display = t === "cases" ? "" : "none";
+  $("pagePosters").style.display = t === "posters" ? "" : "none";
+  $("caseFilters").style.display = t === "cases" ? "" : "none";
+}
+
+// ---------- 筛选 ----------
+function buildFilters() {
+  fillSelect("fOperator", uniq(cases.map(c => c.operator)), "操作师 · 全部");
+  fillSelect("fPart", uniq(cases.map(c => c.part)), "部位 · 全部");
+  fillSelect("fProject", uniq(cases.map(c => c.project)), "项目 · 全部");
+  fillList("dlOperator", uniq(cases.map(c => c.operator)));
+  fillList("dlPart", uniq(cases.map(c => c.part)));
+  fillList("dlProject", uniq(cases.map(c => c.project)));
+}
+function uniq(arr) { return [...new Set(arr.filter(Boolean))]; }
+function fillSelect(id, opts, allLabel) {
+  const el = $(id), keep = el.value;
+  el.innerHTML = `<option value="">${allLabel}</option>` + opts.map(o => `<option>${esc(o)}</option>`).join("");
+  if (opts.includes(keep)) el.value = keep;
+}
+function fillList(id, opts) { $(id).innerHTML = opts.map(o => `<option value="${esc(o)}">`).join(""); }
+
+// ---------- 案例渲染 ----------
+function renderCases() {
+  const fo = $("fOperator").value, fp = $("fPart").value, fj = $("fProject").value;
+  ["fOperator","fPart","fProject"].forEach(id => $(id).classList.toggle("on", !!$(id).value));
+  const list = cases.filter(c =>
+    (!fo || c.operator === fo) && (!fp || c.part === fp) && (!fj || c.project === fj));
+  $("caseCount").textContent = list.length ? `共 ${list.length} 条案例` : "";
+  $("caseEmpty").style.display = list.length ? "none" : "";
+  $("caseGrid").innerHTML = list.map(c => {
+    const thumb = c.mode === "pair"
+      ? `<div class="pairbox">
+           <div class="half"><img loading="lazy" src="/api/img/${enc(c.thumbs[0])}"><span class="tag">前</span></div>
+           <div class="half"><img loading="lazy" src="/api/img/${enc(c.thumbs[1])}"><span class="tag">后</span></div>
+         </div>`
+      : `<img loading="lazy" src="/api/img/${enc(c.thumbs[0])}">`;
+    return `<div class="card">
+      <div class="thumb" onclick="openCase('${c.id}')">${thumb}</div>
+      <div class="meta">
+        <div class="l1"><span>${esc(c.operator || "未填操作师")}</span><span>${esc(c.date || "")}</span></div>
+        <div class="l2">${c.part ? `<span class="chip">${esc(c.part)}</span>` : ""}${c.project ? `<span class="chip gold">${esc(c.project)}</span>` : ""}</div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ---------- 海报渲染 ----------
+function renderPosters() {
+  const act = posters.filter(p => p.status === "active");
+  const stp = posters.filter(p => p.status !== "active");
+  $("activeEmpty").style.display = act.length ? "none" : "";
+  $("stoppedEmpty").style.display = stp.length ? "none" : "";
+  $("activeGrid").innerHTML = act.map(p => pcard(p, false)).join("");
+  $("stoppedGrid").innerHTML = stp.map(p => pcard(p, true)).join("");
+}
+function pcard(p, off) {
+  return `<div class="pcard${off ? " off" : ""}">
+    ${off ? `<div class="ribbon">停售勿推</div>` : ""}
+    <div class="thumb" onclick="openPoster('${p.id}')"><img loading="lazy" src="/api/img/${enc(p.thumb || p.img)}"></div>
+    <div class="pmeta"><div class="t">${esc(p.title || "未命名活动")}</div><div class="v">${esc(p.valid || "")}${p.note ? " · " + esc(p.note) : ""}</div></div>
+    <div class="pacts">
+      <button onclick="togglePoster('${p.id}','${esc(p.title || "")}',${off})">${off ? "恢复在售" : "标为停售"}</button>
+      <button onclick="delItem('posters','${p.id}')">删除</button>
+    </div>
+  </div>`;
+}
+
+// ---------- 大图 ----------
+function openCase(id) {
+  const c = cases.find(x => x.id === id); if (!c) return;
+  $("vTitle").textContent = c.mode === "pair" ? "术前 / 术后对比" : "案例照片";
+  $("vBody").innerHTML = c.imgs.map((k, i) =>
+    `<div class="vimg">${c.mode === "pair" ? `<span class="tag">${i === 0 ? "术 前" : "术 后"}</span>` : ""}<img src="/api/img/${enc(k)}"></div>`).join("");
+  $("vMeta").innerHTML = [c.operator, c.part, c.project, c.date, c.note].filter(Boolean).map(esc).join(" · ");
+  $("vDel").onclick = () => delItem("cases", id);
+  $("viewer").classList.add("show");
+}
+function openPoster(id) {
+  const p = posters.find(x => x.id === id); if (!p) return;
+  $("vTitle").textContent = p.title || "活动海报";
+  $("vBody").innerHTML = `<div class="vimg"><img src="/api/img/${enc(p.img)}"></div>`;
+  $("vMeta").innerHTML = [p.status === "active" ? "🟢 在售主推" : "⛔ 停售勿推", p.valid, p.note].filter(Boolean).map(esc).join(" · ");
+  $("vDel").onclick = () => delItem("posters", id);
+  $("viewer").classList.add("show");
+}
+
+// ---------- 上传弹层 ----------
+function openUpload() {
+  if (curTab === "cases") { resetCaseForm(); $("caseSheet").classList.add("show"); }
+  else { resetPosterForm(); $("posterSheet").classList.add("show"); }
+}
+function setMode(m) {
+  curMode = m;
+  $("mSingle").classList.toggle("on", m === "single");
+  $("mPair").classList.toggle("on", m === "pair");
+  $("slotB").style.display = m === "pair" ? "" : "none";
+  $("lbA").textContent = m === "pair" ? "术 前" : "照 片";
+}
+function setStatus(s) {
+  curStatus = s;
+  $("stActive").classList.toggle("on", s === "active");
+  $("stStopped").classList.toggle("on", s === "stopped");
+}
+function preview(input, imgId, hintId) {
+  const f = input.files[0]; if (!f) return;
+  $(imgId).src = URL.createObjectURL(f); $(imgId).style.display = ""; $(hintId).style.display = "none";
+}
+function resetCaseForm() {
+  ["fileA","fileB"].forEach(id => $(id).value = "");
+  ["prevA","prevB"].forEach(id => { $(id).style.display = "none"; });
+  ["hintA","hintB"].forEach(id => { $(id).style.display = ""; });
+  $("inNote").value = ""; setMode(curMode);
+}
+function resetPosterForm() {
+  $("fileP").value = ""; $("prevP").style.display = "none"; $("hintP").style.display = "";
+  $("inTitle").value = ""; $("inValid").value = ""; $("inPNote").value = ""; setStatus("active");
+}
+
+// ---------- 图片压缩 ----------
+async function compress(file, maxDim, quality) {
+  try {
+    const bmp = await createImageBitmap(file);
+    const scale = Math.min(1, maxDim / Math.max(bmp.width, bmp.height));
+    const w = Math.round(bmp.width * scale), h = Math.round(bmp.height * scale);
+    const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+    cv.getContext("2d").drawImage(bmp, 0, 0, w, h);
+    const blob = await new Promise(r => cv.toBlob(r, "image/jpeg", quality));
+    return blob || file;
+  } catch (e) { return file; }
+}
+
+// ---------- 提交 ----------
+async function submitCase() {
+  const fA = $("fileA").files[0];
+  if (!fA) return toast("请先选择照片");
+  if (curMode === "pair" && !$("fileB").files[0]) return toast("对比模式需要术前、术后两张照片");
+  const btn = $("caseGo"); btn.disabled = true; btn.textContent = "压缩上传中…";
+  try {
+    const fd = new FormData();
+    fd.append("kind", "case"); fd.append("mode", curMode);
+    fd.append("operator", $("inOperator").value); fd.append("part", $("inPart").value);
+    fd.append("project", $("inProject").value); fd.append("date", $("inDate").value);
+    fd.append("note", $("inNote").value);
+    fd.append("fileA", await compress(fA, 1600, .85), "a.jpg");
+    fd.append("thumbA", await compress(fA, 480, .8), "at.jpg");
+    if (curMode === "pair") {
+      const fB = $("fileB").files[0];
+      fd.append("fileB", await compress(fB, 1600, .85), "b.jpg");
+      fd.append("thumbB", await compress(fB, 480, .8), "bt.jpg");
+    }
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "上传失败");
+    $("caseSheet").classList.remove("show"); toast("案例已保存 ✓"); loadAll();
+  } catch (e) { toast(e.message || "上传失败,请重试"); }
+  btn.disabled = false; btn.textContent = "保 存 案 例";
+}
+
+async function submitPoster() {
+  const f = $("fileP").files[0];
+  if (!f) return toast("请先选择海报图片");
+  const btn = $("posterGo"); btn.disabled = true; btn.textContent = "压缩上传中…";
+  try {
+    const fd = new FormData();
+    fd.append("kind", "poster"); fd.append("status", curStatus);
+    fd.append("title", $("inTitle").value); fd.append("valid", $("inValid").value);
+    fd.append("note", $("inPNote").value);
+    fd.append("file", await compress(f, 1600, .85), "p.jpg");
+    fd.append("thumb", await compress(f, 520, .8), "pt.jpg");
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "上传失败");
+    $("posterSheet").classList.remove("show"); toast("海报已保存 ✓"); loadAll();
+  } catch (e) { toast(e.message || "上传失败,请重试"); }
+  btn.disabled = false; btn.textContent = "保 存 海 报";
+}
+
+// ---------- 状态切换 / 删除 ----------
+async function togglePoster(id, title, off) {
+  const msg = off ? `确定将「${title}」恢复为在售主推?` : `确定将「${title}」标为停售勿推?销售将不再推荐。`;
+  if (!confirm(msg)) return;
+  try {
+    const res = await fetch(`/api/toggle?id=${id}`, { method: "POST" });
+    if (!res.ok) throw 0;
+    toast("状态已更新 ✓"); loadAll();
+  } catch (e) { toast("操作失败,请重试"); }
+}
+
+async function delItem(type, id) {
+  const pw = prompt("删除需要管理密码:");
+  if (pw === null) return;
+  try {
+    const res = await fetch(`/api/delete?type=${type}&id=${id}`, {
+      method: "POST", headers: { "X-Admin-Password": pw },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "删除失败");
+    $("viewer").classList.remove("show"); toast("已删除 ✓"); loadAll();
+  } catch (e) { toast(e.message || "删除失败"); }
+}
+
+// ---------- 工具 ----------
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m])); }
+function enc(k) { return encodeURIComponent(k); }
+let toastTimer;
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2400);
+}
+</script>
+</body>
+</html>
