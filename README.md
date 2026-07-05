@@ -7,7 +7,7 @@
 ```
 index.html
 functions/
-  └── api/
+└── api/
       └── [[path]].js
 README.md
 ```
@@ -51,3 +51,4 @@ README.md
 
 - 变量名必须完全一致:`DB`、`IMAGES`、`ADMIN_PASSWORD`(区分大小写)
 - 照片会在手机端自动压缩后再上传(约几百 KB 一张),10GB 免费额度大约可存两万张以上
+- 2026-07-05:重新连接 GitHub 与 Cloudflare Pages 部署,修复图片裂图问题
